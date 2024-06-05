@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/lekha-lipi.svg";
 import useAuth from "../../hooks/useAuth";
 import userImg from "../../assets/user.png";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
-        await logout();
+        await logout(navigate);
     };
 
     const menuItems = <>
@@ -15,7 +16,16 @@ const Navbar = () => {
             <Link to="/">Home</Link>
         </li>
         <li>
+            <Link to="/dashboard">Dashboard</Link>
+        </li>
+        <li>
             <Link to="/all-blogs">All Blogs</Link>
+        </li>
+        <li>
+            <Link to="/contact">Contacts</Link>
+        </li>
+        <li>
+            <Link to="/about">About</Link>
         </li>
     </>;
 

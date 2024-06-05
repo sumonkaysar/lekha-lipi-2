@@ -2,9 +2,21 @@ import moment from "moment";
 import { FaCalendarAlt, FaTag } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import EditMyBlog from "./EditMyBlog";
+import axios from "axios";
+import { server } from "../../../../links";
+import toast from "react-hot-toast";
 
-const MySingleBlog = ({ blog }) => {
+const MySingleBlog = ({ blog, refetch }) => {
     const { _id, img, title, category, createdTime } = blog || {}
+
+    const handleDelete = () => {
+        axios.delete(`${server}/blogs/${_id}`)
+        .then(({ data }) => {
+            toast.success("Blog is deleted successfully");
+            refetch();
+        })
+        .catch(err => console.log(err))
+    }
 
     return (
         <div to={``} className="relative border-b-2 border-slate-400 pb-6  shadow-xl">
@@ -22,8 +34,8 @@ const MySingleBlog = ({ blog }) => {
             <h3 className="font-semibold uppercase text-xl mt-3 px-3">{title}</h3>
             <div className="flex flex-wrap justify-center gap-2 mt-4 px-3">
                 <Link to={`/blogs/${_id}`} className="btn btn-sm bg-[#064e89] text-white py-2 h-fit min-h-fit text-[14px] rounded-[4px] hover:bg-[#0572ca]">See Details</Link>
-                <button onClick={() => document.getElementById('editMyBlogModal').showModal()} className="btn btn-warning btn-sm text-white py-2 h-fit min-h-fit text-[14px] rounded-[4px]">Edit</button>
-                <button className="btn btn-sm btn-error text-white py-2 h-fit min-h-fit text-[14px] rounded-[4px]">Delete</button>
+                <button onClick={() => document.getElementById(`editMyBlogModal${_id}`).showModal()} className="btn btn-warning btn-sm text-white py-2 h-fit min-h-fit text-[14px] rounded-[4px]">Edit</button>
+                <button onClick={handleDelete} className="btn btn-sm btn-error text-white py-2 h-fit min-h-fit text-[14px] rounded-[4px]">Delete</button>
             </div>
             <EditMyBlog blog={blog} />
         </div>

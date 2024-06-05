@@ -10,6 +10,9 @@ import MyBlogs from "../pages/Dashboard/MyBlogs";
 import AddBlog from "../pages/Dashboard/AddBlog";
 import AllBlogs from "../pages/AllBlogs";
 import BlogDetails from "../pages/BlogDetails";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
     {
@@ -25,8 +28,16 @@ export const router = createBrowserRouter([
                 element: <AllBlogs />,
             },
             {
-                path: "/blog-details",
-                element: <BlogDetails />,
+                path: "/blogs/:id",
+                element: <PrivateRoute><BlogDetails /></PrivateRoute>,
+            },
+            {
+                path: "/about",
+                element: <About />,
+            },
+            {
+                path: "/contact",
+                element: <Contact />,
             },
         ]
     },
@@ -40,7 +51,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/dashboard",
-        element: <DashboardLayout />,
+        element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
         children: [
             {
                 index: true,

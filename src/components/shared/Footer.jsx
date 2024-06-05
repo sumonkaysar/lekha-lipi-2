@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../../assets/lekha-lipi.svg";
+import ll from "../../assets/ll.svg";
 
 const Footer = () => {
     return (
@@ -11,7 +12,7 @@ const Footer = () => {
                 </nav>
                 <aside>
                     <div className="max-w-16">
-                        <img src="./lekha-lipi.svg" alt="LekhaLipi" />
+                        <img src={ll} alt="LekhaLipi" />
                     </div>
                     <div className="max-w-[250px]">
                         <img src={logo} alt="LekhaLipi" />

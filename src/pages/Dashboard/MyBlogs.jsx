@@ -1,12 +1,12 @@
 import axios from "axios";
-import MySingleBlog from "../../components/Dashboard/Profile/MySingleBlog";
 import { server } from "../../../links";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../hooks/useAuth";
+import MySingleBlog from "../../components/Dashboard/MyBlogs/MySingleBlog";
 
 const MyBlogs = () => {
     const {user} = useAuth();
-    const { data: { data: blogs = [] } = {} } = useQuery
+    const { data: { data: blogs = [] } = {}, refetch } = useQuery
     ({
         queryKey: ['my-blogs'],
         queryFn: () => axios.get(`${server}/blogs/my/${user.email}`)
@@ -23,6 +23,7 @@ const MyBlogs = () => {
                     blogs?.map(blog => <MySingleBlog
                         key={blog._id}
                         blog={blog}
+                        refetch={refetch}
                     />)
                 }
             </div>

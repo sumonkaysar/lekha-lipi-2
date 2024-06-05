@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { server } from "../../../../links";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
@@ -10,23 +10,20 @@ import toast from "react-hot-toast";
 const EditMyBlog = ({ blog }) => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [categories, setCategories] = useState([]);
-    const { user } = useAuth();
-    const navigate = useNavigate();
+    const closeBtnRef = useRef(null);
 
     const token = Cookies.get("lekhaLipiToken");
     const { _id, title, description, category } = blog || {}
     
-    const handleAddBlog = data => {
-        const blog = {
-            ...data,
-            createdTime: (new Date()).getTime()
+    const handleUpdateBlog = data => {
+        const updatedData = {
+            ...data
         }
-        axios.post(`${server}/blogs`, blog)
+        axios.patch(`${server}/blogs/${_id}`, updatedData)
             .then(({ data }) => {
-                toast.success("Blog is added successfully");
+                toast.success("Blog is updated successfully");
                 reset();
-                navigate("/dashboard/my-blogs");
-
+                closeBtnRef.current.click()
             })
             .catch(err => console.log(err))
     }
@@ -40,12 +37,12 @@ const EditMyBlog = ({ blog }) => {
     }, []);
 
     return (
-        <dialog id="editMyBlogModal" className="modal">
+        <dialog id={`editMyBlogModal${_id}`} className="modal">
             <div className="modal-box">
                 <form method="dialog">
-                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                    <button ref={closeBtnRef} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
-                <form onSubmit={handleSubmit(handleAddBlog)}>
+                <form onSubmit={handleSubmit(handleUpdateBlog)}>
                     <div className="form-control mt-5">
                         <label htmlFor="name" className="text-sm mb-1 font-bold">Title</label>
                         <input

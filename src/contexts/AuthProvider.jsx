@@ -32,8 +32,11 @@ const AuthProvider = ({ children }) => {
         return updateProfile(auth.currentUser, userInfo);
     }
 
-    const logout = () => {
-        return signOut(auth);
+    const logout = (navigate) => {
+        signOut(auth).then(() => {
+            setUser(null);
+            navigate("/login")
+        })
     };
 
     const providerLogin = (provider) => {

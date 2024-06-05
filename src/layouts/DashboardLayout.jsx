@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { FaBars, FaBlogger, FaUser } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
 import useAuth from "../hooks/useAuth";
@@ -6,13 +6,10 @@ import { FaCirclePlus } from "react-icons/fa6";
 
 const DashboardLayout = () => {
     const { logout } = useAuth();
+    const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout()
-            .then(() => {
-
-            })
-            .catch(err => console.log(err))
+    const handleLogout = async () => {
+        logout(navigate)
     };
     return (
         <div className="drawer lg:drawer-open">
