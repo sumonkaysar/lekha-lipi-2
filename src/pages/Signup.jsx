@@ -1,17 +1,34 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash, FaFacebook, FaGithub, FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGithub, FaGoogle } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
 import account from "../assets/account.svg";
 import logo from "../assets/lekha-lipi-white.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { server } from "../../links";
+import { GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 
 const Signup = () => {
     const [passwordShown, setPasswordShown] = useState(false);
     const [signupError, setSignupError] = useState("");
-    const { createUser } = useAuth();
+    const { createUser, updateUser, providerLogin } = useAuth();
+    const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const googleProvider = new GoogleAuthProvider();
+    const githubProvider = new GithubAuthProvider();
+
+    const handleProviderSignup = provider => {
+        providerLogin(provider)
+            .then(result => {
+                const { uid, displayName, email, photoURL } = result.user
+                const joinedTime = (new Date()).getTime();
+                saveUserToDB({ uid, name: displayName, email, img: photoURL, joinedTime }, "provider");
+            })
+            .catch(err => console.error(err));
+    }
 
     const handleSignup = data => {
         setSignupError("");
@@ -21,14 +38,51 @@ const Signup = () => {
 
         createUser(data.email, data.password)
             .then(result => {
-                // axios.post("http://localhost:5000/users", data)
-                // .then(result => {
-                console.log(result);
-                // })
-                // .catch(err => console.log(err))
+                updateUser({ displayName: data.name })
+                    .then(() => {
+                        console.log("Account Created");
+                        const joinedTime = (new Date()).getTime();
+                        saveUserToDB({
+                            uid: result.user.uid,
+                            name: data.name,
+                            email: data.email,
+                            joinedTime,
+                        }, "")
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    });
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                switch (err.message.split("auth/")[1].split(")")[0]) {
+                    case "email-already-in-use":
+                        setSignupError("The user is already registered");
+                        break;
+                    case "weak-password":
+                        setSignupError(err.message.split("(auth/")[0].split(": ")[1]);
+                        break;
+                    case "invalid-email":
+                        setSignupError("Enter a valid email");
+                        break;
+                    case "too-many-requests":
+                        setSignupError(err.message.split("(auth/")[0].split(": ")[1]);
+                        break;
+                    default:
+                        setSignupError(err.message)
+                        break;
+                }
+            })
     };
+
+    const saveUserToDB = (user, url) => {
+        axios.post(`${server}/users/${url}`, user)
+            .then(data => {
+                Cookies.set('lekhaLipiToken', data.token, { expires: 7, path: '/' });
+                navigate('/');
+            })
+            .catch(err => console.error(err));
+    }
 
     return (
         <div className="flex h-screen">
@@ -101,14 +155,14 @@ const Signup = () => {
                                     placeholder="Confirm Password"
                                     className="input input-sm rounded-sm text-[15px] placeholder:text-[15px]"
                                 />
-                                {errors.password && (
+                                {errors.confirmPassword && (
                                     <p className="text-[#ff2525] text-[14px] mt-1 font-semibold">
                                         Confirm password is required
                                     </p>
                                 )}
                             </div>
                             {signupError && (
-                                <p className="text-[#ff2525] text-[14px] mt-2 font-semibold text-center text-sm ">
+                                <p className="text-[#ff2525] text-[14px] mt-2 font-semibold text-center">
                                     {signupError}
                                 </p>
                             )}
@@ -118,9 +172,8 @@ const Signup = () => {
                         </form>
                         <div className="mt-4 flex items-center gap-3">
                             <span className="text-white text-[12px] font-light">Or signup with</span>
-                            <FaGoogle color="white" />
-                            <FaGithub color="white" />
-                            {/* <FaFacebook color="white" /> */}
+                            <FaGoogle onClick={() => handleProviderSignup(googleProvider)} className="text-white cursor-pointer" />
+                            <FaGithub onClick={() => handleProviderSignup(githubProvider)} className="text-white cursor-pointer" />
                         </div>
                         <div className="mt-4 text-white text-[14px] font-light">
                             <p>Already have an account? <Link className="font-medium text-[#ffde00] hover:underline" to="/login">Login Here</Link></p>

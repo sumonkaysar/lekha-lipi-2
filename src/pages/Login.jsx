@@ -1,38 +1,68 @@
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash, FaFacebook, FaGithub, FaGoogle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaGithub, FaGoogle } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
 import { GoogleAuthProvider } from "firebase/auth";
 import account from "../assets/account.svg";
 import logo from "../assets/lekha-lipi-white.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GithubAuthProvider } from "firebase/auth/web-extension";
+import { server } from "../../links";
+import Cookies from "js-cookie";
 
 const Login = () => {
     const { login, providerLogin } = useAuth();
     const [passwordShown, setPasswordShown] = useState(false);
     const [loginError, setLoginError] = useState("");
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const navigate = useNavigate();
 
     const googleProvider = new GoogleAuthProvider();
     const githubProvider = new GithubAuthProvider();
 
     const handleProviderLogin = provider => {
-        providerLogin(provider).then(result => console.log(result))
+        providerLogin(provider)
+            .then(result => {
+                const { uid, displayName, email, photoURL } = result.user
+                const joinedTime = (new Date()).getTime();
+                axios.post(`${server}/users/provider`, { uid, name: displayName, email, img: photoURL, joinedTime })
+                    .then(({ data }) => {
+                        Cookies.set('lekhaLipiToken', data.token, { expires: 7, path: '/' });
+                    })
+                    .catch(err => console.error(err));
+                navigate('/');
+            })
+            .catch(err => console.error(err));
     }
 
     const handleLogin = data => {
         setLoginError("");
         login(data.email, data.password)
             .then(result => {
-                // axios.post("http://localhost:5000/users", data)
-                // .then(result => {
-                console.log(result);
-                // })
-                // .catch(err => console.log(err))
+                axios.post(`${server}/users/provider`, { email: data.email })
+                    .then(info => {
+                        console.log(info);
+                        Cookies.set('lekhaLipiToken', info.token, { expires: 7, path: '/' });
+                    })
+                    .catch(err => console.log(err))
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.error(err);
+                switch (err.message.split("auth/")[1].split(")")[0]) {
+                    case "invalid-credential":
+                        setLoginError("Email or password is incorrect");
+                        break;
+
+                    case "too-many-requests":
+                        setLoginError(err.message.split("(auth/")[0].split(": ")[1]);
+                        break;
+
+                    default:
+                        setLoginError(err.message);
+                        break;
+                }
+            });
     };
 
     return (
@@ -87,7 +117,7 @@ const Login = () => {
                                 )}
                             </div>
                             {loginError && (
-                                <p className="text-[#ff2525] text-[14px] mt-2 font-semibold text-center text-sm ">
+                                <p className="text-[#ff2525] text-[14px] mt-2 font-semibold text-center">
                                     {loginError}
                                 </p>
                             )}
@@ -97,9 +127,8 @@ const Login = () => {
                         </form>
                         <div className="mt-4 flex items-center gap-3">
                             <span className="text-white text-[12px] font-light">Or login with</span>
-                            <FaGoogle className="text-white cursor-pointer" />
-                            <FaGithub className="text-white cursor-pointer" />
-                            {/* <FaFacebook color="white" /> */}
+                            <FaGoogle onClick={() => handleProviderLogin(googleProvider)} className="text-white cursor-pointer" />
+                            <FaGithub onClick={() => handleProviderLogin(githubProvider)} className="text-white cursor-pointer" />
                         </div>
                         <div className="mt-4 text-white text-[14px] font-light">
                             <p>Don't have an account? <Link className="font-medium text-[#ffde00] hover:underline" to="/signup">Signup Here</Link></p>
