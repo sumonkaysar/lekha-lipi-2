@@ -3,11 +3,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash, FaGithub, FaGoogle } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
-import { GoogleAuthProvider } from "firebase/auth";
+import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import account from "../assets/account.svg";
 import logo from "../assets/lekha-lipi-white.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { GithubAuthProvider } from "firebase/auth/web-extension";
 import { server } from "../../links";
 import Cookies from "js-cookie";
 
