@@ -8,10 +8,10 @@ import { server } from "../../../../links";
 import useAuth from "../../../hooks/useAuth";
 
 const DashboardCounts = () => {
-    const { user } = useAuth()
+    const { user, authHeader } = useAuth()
     const { data: { data: dashboardData = {} } = {} } = useQuery({
         queryKey: ['dashboardData', user?.email],
-        queryFn: () => axios.get(`${server}/users/${user?.email}/dashboard`)
+        queryFn: () => axios.get(`${server}/users/${user?.email}/dashboard`, authHeader)
     })
 
     return (

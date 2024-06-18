@@ -1,17 +1,19 @@
 import axios from "axios";
 import { server } from "../../../links";
 import { useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 const SearchBlogs = () => {
     const [items, setItems] = useState([]);
+    const { authHeader } = useAuth();
     const handleSearch = e => {
         const title = e.target.value.trim()
         if (title) {
-            axios.get(`${server}/blogs/search?title=${title}`)
-            .then(({ data }) => {
-                setItems(data)
-            })
-            .catch(err => console.log(err))
+            axios.get(`${server}/blogs/search?title=${title}`, authHeader)
+                .then(({ data }) => {
+                    setItems(data)
+                })
+                .catch(err => console.log(err))
         }
     }
 
@@ -24,6 +26,17 @@ const SearchBlogs = () => {
             <div className="form-control mt-10 w-[500px] mx-auto">
                 <input onKeyUp={handleSearch} type="text" placeholder="Search" className="input input-bordered border-gray-700 placeholder:text-gray-500 w-full" />
             </div>
+            {
+                items?.length > 0 &&
+                <div>
+                    {
+                        items?.map(blog => <div>
+                            <div><img src={blog.img} alt="" /></div>
+                            <h2>{blog.title}</h2>
+                        </div>)
+                    }
+                </div>
+            }
         </div>
     )
 };

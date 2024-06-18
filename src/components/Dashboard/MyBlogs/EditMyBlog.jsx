@@ -3,23 +3,21 @@ import { useEffect, useRef, useState } from "react";
 import { server } from "../../../../links";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 
 const EditMyBlog = ({ blog }) => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [categories, setCategories] = useState([]);
     const closeBtnRef = useRef(null);
+    const { authHeader } = useAuth();
 
-    const token = Cookies.get("lekhaLipiToken");
     const { _id, title, description, category } = blog || {}
-    
+
     const handleUpdateBlog = data => {
         const updatedData = {
             ...data
         }
-        axios.patch(`${server}/blogs/${_id}`, updatedData)
+        axios.patch(`${server}/blogs/${_id}`, updatedData, authHeader)
             .then(({ data }) => {
                 toast.success("Blog is updated successfully");
                 reset();
@@ -29,12 +27,12 @@ const EditMyBlog = ({ blog }) => {
     }
 
     useEffect(() => {
-        axios.get(`${server}/categories`)
+        axios.get(`${server}/categories`, authHeader)
             .then(({ data }) => {
                 setCategories(data);
             })
             .catch(err => console.log(err))
-    }, []);
+    }, [authHeader]);
 
     return (
         <dialog id={`editMyBlogModal${_id}`} className="modal">

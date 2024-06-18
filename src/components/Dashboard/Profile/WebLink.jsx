@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 
 const WebLink = ({ children, data }) => {
-    const urls = data?.value?.split("/");
 
     return (
         <div className="border-b border-[#b8b8b8] pb-4 pt-2 flex justify-between">
@@ -13,7 +12,7 @@ const WebLink = ({ children, data }) => {
                 <p className="text-[#616060]">
                     {
                         data.value ?
-                            <Link to={data.value}>{urls[urls.length - 1]}</Link> :
+                            <Link className="link text-blue-600" target="_blank" to={data.url}>{data.value}</Link> :
                             "N/A"
                     }
                 </p>

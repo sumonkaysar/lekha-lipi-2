@@ -3,6 +3,7 @@ import { FaBars, FaBlogger, FaUser } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
 import useAuth from "../hooks/useAuth";
 import { FaCirclePlus } from "react-icons/fa6";
+import logo from "../assets/lekha-lipi.svg";
 
 const DashboardLayout = () => {
     const { logout } = useAuth();
@@ -31,6 +32,11 @@ const DashboardLayout = () => {
                 ></label>
                 <ul className="menu p-4 w-60 min-h-screen bg-base-200 text-base-content flex flex-col justify-between">
                     <div>
+                        <li>
+                            <Link to="/" className="max-w-[150px] mb-2">
+                                <img src={logo} alt="LekhaLipi" />
+                            </Link>
+                        </li>
                         <li>
                             <Link to="/dashboard">
                                 <MdSpaceDashboard size={24} />

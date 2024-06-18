@@ -9,6 +9,7 @@ import {
     updateProfile,
 } from "firebase/auth";
 import app from "../firebase/firebase.config";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext(null);
 
@@ -17,6 +18,9 @@ const auth = getAuth(app);
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const token = Cookies.get("lekhaLipiToken");
+    const authHeader = {"headers": {"authorization": `Bearer ${token}`}};
 
     const createUser = (email, password) => {
         setLoading(true);
@@ -58,7 +62,7 @@ const AuthProvider = ({ children }) => {
         };
     }, []);
 
-    const authInfo = { loading, user, createUser, login, updateUser, providerLogin, logout };
+    const authInfo = { loading, user, createUser, login, updateUser, providerLogin, logout, authHeader };
     return (
         <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
     );

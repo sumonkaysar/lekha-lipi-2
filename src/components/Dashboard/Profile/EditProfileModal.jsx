@@ -3,15 +3,19 @@ import { useForm } from "react-hook-form";
 import { FaTimes } from "react-icons/fa";
 import { server } from "../../../../links";
 import toast from "react-hot-toast";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import useAuth from "../../../hooks/useAuth";
 
 const EditProfileModal = ({ userData, refetch }) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const { img, name, email, mobile, location, website, facebook, instagram, github, twitter } = userData;
+    const { authHeader } = useAuth();
+    const { img, name, email, mobile, occupation, location, website, facebook, instagram, github, linkedIn, twitter } = userData;
     const closeBtnRef = useRef(null);
+    const [linkErrors, setLinkErrors] = useState({});
 
     const handleUpdateUser = data => {
         const updateInfo = {};
+        setLinkErrors({});
         Object.keys(data).forEach(key => {
             if (data[key] && userData[key] !== data[key]) {
                 updateInfo[key] = data[key]
@@ -19,7 +23,13 @@ const EditProfileModal = ({ userData, refetch }) => {
         });
 
         if (Object.keys(updateInfo).length > 0) {
-            axios.patch(`${server}/users/${email}`, updateInfo)
+            Object.keys(updateInfo).forEach(key => {
+                if (updateInfo[key].includes("www") || updateInfo[key].includes("/")) {
+                    setLinkErrors(prevErrors => ({ ...prevErrors, [key]: `${key} username cannot contain '/' or 'www'` }))
+                }
+            });
+
+            axios.patch(`${server}/users/${email}`, updateInfo, authHeader)
                 .then(({ data }) => {
                     if (data.modifiedCount > 0) {
                         refetch();
@@ -62,6 +72,16 @@ const EditProfileModal = ({ userData, refetch }) => {
                         />
                     </div>
                     <div className="form-control mt-2">
+                        <label className="text-sm mb-1">Mobile</label>
+                        <input
+                            {...register("mobile")}
+                            defaultValue={mobile}
+                            type="text"
+                            placeholder="Mobile"
+                            className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
+                        />
+                    </div>
+                    <div className="form-control mt-2">
                         <label className="text-sm mb-1">Location</label>
                         <input
                             {...register("location")}
@@ -72,12 +92,12 @@ const EditProfileModal = ({ userData, refetch }) => {
                         />
                     </div>
                     <div className="form-control mt-2">
-                        <label className="text-sm mb-1">Mobile</label>
+                        <label className="text-sm mb-1">Occupation</label>
                         <input
-                            {...register("mobile")}
-                            defaultValue={mobile}
+                            {...register("occupation")}
+                            defaultValue={occupation}
                             type="text"
-                            placeholder="Mobile"
+                            placeholder="Occupation"
                             className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
                         />
                     </div>
@@ -92,44 +112,71 @@ const EditProfileModal = ({ userData, refetch }) => {
                         />
                     </div>
                     <div className="form-control mt-2">
-                        <label className="text-sm mb-1">Facebook Link</label>
+                        <label className="text-sm mb-1">Facebook username</label>
                         <input
                             {...register("facebook")}
                             defaultValue={facebook}
                             type="text"
-                            placeholder="Facebook Link"
+                            placeholder="Facebook username"
                             className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
                         />
+                        {
+                            linkErrors?.facebook && <p className="text-error text-xs mt-1 font-bold first-letter:uppercase">{linkErrors?.facebook}</p>
+                        }
                     </div>
                     <div className="form-control mt-2">
-                        <label className="text-sm mb-1">Instagram Link</label>
+                        <label className="text-sm mb-1">Instagram username</label>
                         <input
                             {...register("instagram")}
                             defaultValue={instagram}
                             type="text"
-                            placeholder="Instagram Link"
+                            placeholder="Instagram username"
                             className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
                         />
+                        {
+                            linkErrors?.instagram && <p className="text-error text-xs mt-1 font-bold first-letter:uppercase">{linkErrors?.instagram}</p>
+                        }
                     </div>
                     <div className="form-control mt-2">
-                        <label className="text-sm mb-1">Github Link</label>
+                        <label className="text-sm mb-1">Github username</label>
                         <input
                             {...register("github")}
                             defaultValue={github}
                             type="text"
-                            placeholder="Github Link"
+                            placeholder="Github username"
                             className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
                         />
+                        {
+                            linkErrors?.github && <p className="text-error text-xs mt-1 font-bold first-letter:uppercase">{linkErrors?.github}</p>
+                        }
                     </div>
                     <div className="form-control mt-2">
-                        <label className="text-sm mb-1">Twitter Link</label>
+                        <label className="text-sm mb-1">LinkedIn username</label>
+                        <input
+                            {...register("linkedIn")}
+                            defaultValue={linkedIn}
+                            type="text"
+                            placeholder="LinkedIn username"
+                            className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
+                        />
+
+                        {
+                            linkErrors?.linkedIn && <p className="text-error text-xs mt-1 font-bold first-letter:uppercase">{linkErrors?.linkedIn}</p>
+                        }
+                    </div>
+                    <div className="form-control mt-2">
+                        <label className="text-sm mb-1">Twitter username</label>
                         <input
                             {...register("twitter")}
                             defaultValue={twitter}
                             type="text"
-                            placeholder="Twitter Link"
+                            placeholder="Twitter username"
                             className="input input-sm rounded-sm text-[15px] placeholder:text-[15px] focus:outline-none"
                         />
+
+                        {
+                            linkErrors?.twitter && <p className="text-error text-xs mt-1 font-bold first-letter:uppercase">{linkErrors?.twitter}</p>
+                        }
                     </div>
                     <div className="form-control mt-6">
                         <button className="btn btn-primary text-white ">Update</button>

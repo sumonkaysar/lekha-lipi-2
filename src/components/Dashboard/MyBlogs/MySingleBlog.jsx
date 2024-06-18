@@ -5,17 +5,19 @@ import EditMyBlog from "./EditMyBlog";
 import axios from "axios";
 import { server } from "../../../../links";
 import toast from "react-hot-toast";
+import useAuth from "../../../hooks/useAuth";
 
 const MySingleBlog = ({ blog, refetch }) => {
     const { _id, img, title, category, createdTime } = blog || {}
+    const { authHeader } = useAuth()
 
     const handleDelete = () => {
-        axios.delete(`${server}/blogs/${_id}`)
-        .then(({ data }) => {
-            toast.success("Blog is deleted successfully");
-            refetch();
-        })
-        .catch(err => console.log(err))
+        axios.delete(`${server}/blogs/${_id}`, authHeader)
+            .then(({ data }) => {
+                toast.success("Blog is deleted successfully");
+                refetch();
+            })
+            .catch(err => console.log(err))
     }
 
     return (

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { imgbbUrl, server } from "../../../links";
 import axios from "axios";
-import Cookies from "js-cookie";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +9,8 @@ import { useNavigate } from "react-router-dom";
 const AddBlog = () => {
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [categories, setCategories] = useState([]);
-    const { user } = useAuth();
+    const { user, authHeader } = useAuth();
     const navigate = useNavigate();
-    const token = Cookies.get("lekhaLipiToken");
 
     const handleAddBlog = data => {
         const image = data.img[0];
@@ -27,7 +25,7 @@ const AddBlog = () => {
                         author: { name: user.displayName, email: user.email },
                         createdTime: (new Date()).getTime()
                     }
-                    axios.post(`${server}/blogs`, blog)
+                    axios.post(`${server}/blogs`, blog, authHeader)
                         .then(({ data }) => {
                             toast.success("Blog is added successfully");
                             reset();
@@ -41,21 +39,21 @@ const AddBlog = () => {
     }
 
     useEffect(() => {
-        axios.get(`${server}/categories`)
+        axios.get(`${server}/categories`, authHeader)
             .then(({ data }) => {
                 setCategories(data);
             })
             .catch(err => console.log(err))
-    }, []);
+    }, [authHeader]);
 
     return (
         <div className="mb-20 mt-10 w-11/12 mx-auto">
-            <h1 className="font-semibold text-3xl uppercase mb-6">
+            <h1 className="font-semibold text-3xl uppercase pt-5 lg:pt-0">
                 <span>Add </span>
                 <span className="text-[#064e89]">Blog</span>
             </h1>
             <form onSubmit={handleSubmit(handleAddBlog)}>
-                <div className="form-control mt-5">
+                <div className="form-control mt-6">
                     <label htmlFor="name" className="text-sm mb-1 font-bold">Title</label>
                     <input
                         {...register("title", { required: true })}

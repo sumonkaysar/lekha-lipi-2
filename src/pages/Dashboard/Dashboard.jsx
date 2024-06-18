@@ -15,8 +15,8 @@ const Dashboard = () => {
 
     return (
         <div className="mb-20 mt-10 w-11/12 mx-auto">
-            <h1 className="font-semibold text-3xl uppercase text-[#064e89]">Dashboard</h1>
-            <div className="mt-10">
+            <h1 className="font-semibold text-3xl uppercase text-[#064e89] pt-5 lg:pt-0">Dashboard</h1>
+            <div className="mt-6">
                 <DashboardCounts />
                 <Barchart data={data} />
             </div>

@@ -5,12 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { FaPencil } from "react-icons/fa6";
 import { FaCalendarAlt, FaTag } from "react-icons/fa";
 import moment from "moment";
+import useAuth from "../hooks/useAuth";
 
 const BlogDetails = () => {
     const { id } = useParams();
+    const { authHeader } = useAuth();
     const { data: { data: blogDetails = {} } = {} } = useQuery({
         queryKey: ['blogDetails', id],
-        queryFn: () => axios.get(`${server}/blogs/${id}`)
+        queryFn: () => axios.get(`${server}/blogs/${id}`, authHeader)
     })
     const { img, title, category, author, createdTime, description } = blogDetails || {}
 
