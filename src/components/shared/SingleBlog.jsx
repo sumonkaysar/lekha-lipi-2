@@ -10,20 +10,20 @@ const SingleBlog = ({ blog }) => {
         <Link to={`/blogs/${_id}`} className="block relative">
             <div className="w-full h-80 overflow-hidden rounded-t-3xl relative">
                 <img className="w-full h-full object-cover" src={img} alt="" />
-                <div className="flex items-center gap-1 text-[#4e4e4e] italic mt-1 absolute bottom-0 bg-[#c9c9c9] w-full justify-center py-1">
+                <div className="flex items-center gap-1 text-[#4e4e4e] text-xs sm:text-base italic mt-1 absolute bottom-0 bg-[#c9c9c9] w-full justify-center py-1">
                     <FaPencil />
                     <span>by {author?.name}</span>
                 </div>
             </div>
-            <div className="absolute bg-slate-100 top-6 -left-3 px-6 py-1 italic flex items-center gap-1 shadow-xl">
+            <div className="absolute bg-slate-100 top-6 -left-3 px-6 py-1 italic flex items-center gap-1 shadow-xl text-xs sm:text-base">
                 <FaTag />
                 <span>{category}</span>
             </div>
-            <div className="flex items-center gap-1 text-[#888] italic mt-3">
+            <div className="flex items-center gap-1 text-[#888] text-xs sm:text-base italic mt-3">
                 <FaCalendarAlt />
                 <span>{moment(createdTime).format("Do MMM, YYYY")}</span>
             </div>
-            <h3 className="font-semibold uppercase text-xl mt-3">{title}</h3>
+            <h3 className="font-semibold uppercase sm:text-xl mt-3">{title}</h3>
         </Link>
     )
 };

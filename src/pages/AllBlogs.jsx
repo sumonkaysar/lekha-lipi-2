@@ -6,7 +6,7 @@ const AllBlogs = () => {
 
     return (
         <div className="mb-20 mt-10 w-11/12 max-w-[1440px] mx-auto">
-            <h1 className="text-center font-semibold text-3xl uppercase relative before:absolute before:w-14 before:h-[3px] before:bg-[#064e89] before:-bottom-3 before:left-1/2 before:-translate-x-1/2 before:content-['']">
+            <h1 className="text-center font-semibold sm:text-3xl uppercase relative before:absolute before:w-14 before:h-[3px] before:bg-[#064e89] before:-bottom-3 before:left-1/2 before:-translate-x-1/2 before:content-['']">
                 <span>All </span>
                 <span className="text-[#064e89]">Blogs</span>
             </h1>

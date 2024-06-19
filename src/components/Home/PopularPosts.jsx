@@ -6,7 +6,7 @@ const PopularPosts = () => {
 
     return (
         <div className="my-20">
-            <h1 className="text-center font-semibold text-3xl uppercase relative before:absolute before:w-14 before:h-[3px] before:bg-[#064e89] before:-bottom-3 before:left-1/2 before:-translate-x-1/2 before:content-['']">
+            <h1 className="text-center font-semibold sm:text-3xl uppercase relative before:absolute before:w-14 before:h-[3px] before:bg-[#064e89] before:-bottom-3 before:left-1/2 before:-translate-x-1/2 before:content-['']">
                 <span>Popular </span>
                 <span className="text-[#064e89]">Posts</span>
             </h1>
