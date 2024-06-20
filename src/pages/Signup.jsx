@@ -77,7 +77,7 @@ const Signup = () => {
 
     const saveUserToDB = (user, url) => {
         axios.post(`${server}/users/${url}`, user)
-            .then(data => {
+            .then(({ data }) => {
                 Cookies.set('lekhaLipiToken', data.token, { expires: 7, path: '/' });
                 navigate('/');
             })
