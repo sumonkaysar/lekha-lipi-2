@@ -20,7 +20,7 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     const token = Cookies.get("lekhaLipiToken");
-    const authHeader = {"headers": {"authorization": `Bearer ${token}`}};
+    const authHeader = { "headers": { "authorization": `Bearer ${token}` } };
 
     const createUser = (email, password) => {
         setLoading(true);
@@ -29,6 +29,7 @@ const AuthProvider = ({ children }) => {
 
     const login = (email, password) => {
         setLoading(true);
+        Cookies.remove('lekhaLipiToken', { path: '/' });
         return signInWithEmailAndPassword(auth, email, password);
     };
 
@@ -51,18 +52,15 @@ const AuthProvider = ({ children }) => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                setLoading(false);
-                console.log(currentUser);
-            } else {
-                setLoading(false);
             }
+            setLoading(false);
         });
         return () => {
             return unsubscribe();
         };
     }, []);
 
-    const authInfo = { loading, user, createUser, login, updateUser, providerLogin, logout, authHeader };
+    const authInfo = { loading, user, createUser, login, updateUser, providerLogin, logout, authHeader, setLoading };
     return (
         <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
     );

@@ -6,12 +6,13 @@ import useAuth from "../hooks/useAuth";
 import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import account from "../assets/account.svg";
 import logo from "../assets/lekha-lipi-white.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { server } from "../../links";
 import Cookies from "js-cookie";
+import { BounceLoader } from "react-spinners";
 
 const Login = () => {
-    const { login, providerLogin } = useAuth();
+    const { login, providerLogin, loading, user } = useAuth();
     const [passwordShown, setPasswordShown] = useState(false);
     const [loginError, setLoginError] = useState("");
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -30,7 +31,7 @@ const Login = () => {
                         Cookies.set('lekhaLipiToken', data.token, { expires: 7, path: '/' });
                     })
                     .catch(err => console.error(err));
-                navigate('/');
+                navigate('/dashboard');
             })
             .catch(err => console.error(err));
     }
@@ -40,11 +41,11 @@ const Login = () => {
         login(data.email, data.password)
             .then(result => {
                 axios.post(`${server}/users/provider`, { email: data.email })
-                    .then(info => {
-                        console.log(info);
-                        Cookies.set('lekhaLipiToken', info.token, { expires: 7, path: '/' });
+                    .then(({ data }) => {
+                        Cookies.set('lekhaLipiToken', data.token, { expires: 7, path: '/' });
                     })
                     .catch(err => console.log(err))
+                navigate('/dashboard');
             })
             .catch(err => {
                 console.error(err);
@@ -63,6 +64,14 @@ const Login = () => {
                 }
             });
     };
+
+    if (loading) {
+        return <div className="w-full h-screen flex justify-center items-center"><BounceLoader color="#36d7b7" /></div>;
+    }
+
+    if (user) {
+        return <Navigate to="/dashboard" />;
+    }
 
     return (
         <div className="flex h-screen">
